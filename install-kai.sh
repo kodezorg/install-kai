@@ -3,21 +3,25 @@
 # Setup script for GitHub CLI (gh) + Kodez kai + Cloud CLIs
 # - Ensures gh is installed (via brew install gh if missing)
 # - Guides the user through gh auth login
+# - **Always** runs `brew uninstall kai` + `brew untap kodezorg/homebrew-kai` first (clean install)
 # - Taps kodezorg/homebrew-kai and installs kai
 # - Ensures Azure CLI (az) is installed and user runs `az login`
 # - Ensures AWS CLI is installed (and optionally configured)
 #
-# IMPORTANT: Use the raw content URL, NOT the GitHub "blob" HTML page.
-# Wrong (returns HTML):
-#   curl ... "https://github.com/kodezorg/install-kai/blob/main/install-kai.sh"
-# Correct:
-#   curl ... "https://raw.githubusercontent.com/kodezorg/install-kai/main/install-kai.sh"
+# IMPORTANT: Do NOT host this on SharePoint if you want a working one-liner.
+# SharePoint sharing links return 403 to curl. Use a raw URL instead:
 #
-# Recommended one-liner (no temp file):
-#   bash <(curl -fsSL "https://raw.githubusercontent.com/kodezorg/install-kai/main/install-kai.sh")
+# Recommended (GitHub Gist raw URL example):
+#   bash <(curl -fsSL "https://gist.githubusercontent.com/YOUR_USER/XXXXXX/raw/setup-kai.sh")
 #
-# Alternative:
-#   curl -fsSL -o /tmp/kai-setup.sh "https://raw.githubusercontent.com/kodezorg/install-kai/main/install-kai.sh" && bash /tmp/kai-setup.sh
+# From this repo (if made available via raw.githubusercontent.com):
+#   bash <(curl -fsSL "https://raw.githubusercontent.com/kodezorg/kodez-ai-platform/main/scripts/setup-kai.sh")
+#
+# Local (after cloning the repo):
+#   bash scripts/setup-kai.sh
+#
+# To test locally:
+#   bash scripts/setup-kai.sh
 
 
 set -euo pipefail
@@ -127,6 +131,15 @@ install_kai() {
     log_info "Installing kai..."
     brew install kai
     log_success "kai installed successfully"
+}
+
+# Force remove any previous kai installation and untap the repo
+# This ensures a clean install (useful when iterating on the tap/package)
+cleanup_previous_kai() {
+    log_info "Cleaning up any previous kai installation..."
+    brew uninstall --force kai 2>/dev/null || true
+    brew untap kodezorg/homebrew-kai 2>/dev/null || true
+    log_success "Previous kai installation and tap removed"
 }
 
 # ============================================
@@ -259,6 +272,9 @@ main() {
     if ! check_auth_status; then
         perform_login
     fi
+
+    # Force a clean slate before (re)installing kai
+    cleanup_previous_kai
 
     # Now safe to access the private tap
     tap_kai_repo

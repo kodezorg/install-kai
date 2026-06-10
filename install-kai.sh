@@ -143,6 +143,27 @@ cleanup_previous_kai() {
 }
 
 # ============================================
+# NodeJS
+# ============================================
+check_node_installed() {
+    if command -v node &> /dev/null; then
+        local node_version
+        node_version=$(node --version 2>/dev/null)
+        log_success "Node.js is installed: $node_version"
+        return 0
+    else
+        log_warn "Node.js is not installed."
+        return 1
+    fi
+}
+
+install_node() {
+    log_info "Installing Node.js via Homebrew..."
+    brew install node
+    log_success "Node.js installed successfully"
+}
+
+# ============================================
 # Azure CLI
 # ============================================
 
@@ -158,6 +179,8 @@ check_az_installed() {
         return 1
     fi
 }
+
+
 
 # Install Azure CLI via Homebrew
 install_az() {
@@ -281,6 +304,11 @@ main() {
 
     if ! check_kai_installed; then
         install_kai
+    fi
+
+    # NodeJS
+    if ! check_node_installed; then
+        install_node
     fi
 
     # Azure CLI

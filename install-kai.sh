@@ -7,12 +7,17 @@
 # - Ensures Azure CLI (az) is installed and user runs `az login`
 # - Ensures AWS CLI is installed (and optionally configured)
 #
-# IMPORTANT: Do NOT host this on SharePoint if you want a working one-liner.
-# SharePoint sharing links return 403 to curl. Use a raw URL instead:
+# IMPORTANT: Use the raw content URL, NOT the GitHub "blob" HTML page.
+# Wrong (returns HTML):
+#   curl ... "https://github.com/kodezorg/install-kai/blob/main/install-kai.sh"
+# Correct:
+#   curl ... "https://raw.githubusercontent.com/kodezorg/install-kai/main/install-kai.sh"
 #
-# Recommended (GitHub Gist raw URL example):
-#   bash <(curl -fsSL "https://gist.githubusercontent.com/kodezorg/install-kai/raw/install-kai.sh")
-
+# Recommended one-liner (no temp file):
+#   bash <(curl -fsSL "https://raw.githubusercontent.com/kodezorg/install-kai/main/install-kai.sh")
+#
+# Alternative:
+#   curl -fsSL -o /tmp/kai-setup.sh "https://raw.githubusercontent.com/kodezorg/install-kai/main/install-kai.sh" && bash /tmp/kai-setup.sh
 
 
 set -euo pipefail
